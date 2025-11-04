@@ -339,7 +339,7 @@ const launchFileExtraction = () => {
                         </div>
                         <input type="search" onChange={onSearchFile} id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Recherchez par nom du fichier ..." required />
                     </div>
-                    <button className='flex h-full items-center justify-center text-sm text-black hover:underline' onClick={() => {setFiles([...filesData]); (document.getElementById("default-search") as HTMLInputElement).value = ""}}>
+                    <button className='flex h-full items-center justify-center text-sm text-black hover:underline' onClick={() => {loadFiles(); (document.getElementById("default-search") as HTMLInputElement).value = ""}}>
                         Rafraichir
                         <IoIosRefresh className='text-gray-400 hover:cursor-pointer ml-2' size={20} />
                     </button>
