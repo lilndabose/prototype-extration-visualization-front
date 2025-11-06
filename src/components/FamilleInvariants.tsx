@@ -5,8 +5,7 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend,
-  ArcElement
+  Legend
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { useEffect, useState } from 'react';
@@ -102,7 +101,6 @@ export default function FamilleInvariants({propsData}: {propsData: number[]}) {
   
   useEffect(() => {
     if(propsData.length > 0){
-      console.log("Props Data Famille Invariants: ", propsData);
       setGraphData({
         labels: allLabels,
         datasets: [

@@ -18,6 +18,8 @@ import axios from 'axios';
 import FamilleInvariants from '../components/FamilleInvariants';
 import ScoreTotal from '../components/ScoreTotal';
 import { statsImg } from '../assets';
+import ManagementModesInsights from '../components/ManagementModesInsights';
+import { set } from 'react-hook-form';
 
 interface FilterInterface{
     label: string,
@@ -165,6 +167,16 @@ const Statistics = () => {
   const [totalStations, setTotalStations] = useState<string>('0');
   const [scopeFamilleData, setScopeFamilleData] = useState<number[]>([]);
   const [scoreAvgScore, setScoreAvgScore] = useState<number>(0);
+  const [managementModesData, setManagementModesData] = useState<{
+    CODO: number;
+    COCO: number;
+    DODO: number;
+  }>({
+    CODO: 0,
+    COCO: 0,
+    DODO: 0
+  });
+  const [totalAfrStations, setTotalAfrStations] = useState<string>('0');
 
   const getSubZone=()=>{
     return Object.keys(SUB_ZONES);
@@ -303,6 +315,12 @@ const getStatisticsByFilter=async()=>{
                 Number(tempScopeFamilleData.et)
             ] : []);
             setTotalStations(data.total_records || '0');
+            setTotalAfrStations(data.total_afr_records || '0');
+            setManagementModesData({
+                CODO: data.management_modes && data.management_modes.CODO ? Number(data.management_modes.CODO) : 0,
+                COCO: data.management_modes && data.management_modes.COCO ? Number(data.management_modes.COCO) : 0,
+                DODO: data.management_modes && data.management_modes.DODO ? Number(data.management_modes.DODO) : 0
+            });
         }
     } catch (error) {
         console.error(`Error fetching statistics by filter ${error}`);
@@ -327,6 +345,16 @@ const fetchAllFilters = async () => {
             }
         });
         setFilters([...temp]);
+        if(data && data.files_creation_date.length > 0){
+           const filteredDates = data.files_creation_date.filter((date: string)=> date.toString().trim() !== '');
+            setSelectedFilterValues(prev => {
+                const dateExists = prev.some(item => item.key === 'date');
+                if (!dateExists) {
+                    return [...prev, {key: 'date', value: filteredDates[0]}];
+                }
+                return prev;
+            });
+        }
     } catch (error) {
         console.error(`Error fetching filters ${error}`);
     } finally {
@@ -352,8 +380,8 @@ return (
                 <div className='w-[32%] border-1 border-gray-100 h-full rounded-md shadow-md '>
                     <FamilleInvariants propsData={scopeFamilleData} />
                 </div>
-                <div className='w-[32%] border-1 border-gray-100 h-full rounded-md shadow-md'>
-                    <img src={statsImg} alt="Statistics" className='w-full h-full object-contain rounded-md'/>
+                <div className='w-[32%] border-1 flex justify-center items-center border-gray-100 h-full rounded-md shadow-md'>
+                    <ManagementModesInsights data={managementModesData} />
                 </div>
                 <div className='w-[32%] border-1 border-gray-100 h-full rounded-md shadow-md'>
                     <ScoreTotal score={scoreAvgScore} maxScore={100} />
@@ -461,9 +489,17 @@ return (
             </div>
             <div className='w-full h-[20%] shadow-md border-1 flex justify-center items-center flex-col border-gray-200 rounded-sm'>
                 <p className='m-2 text-lg text-[#2962ff]'>Stations Inspectées</p>
-                <div className='w-full flex items-center justify-center'>
-                    <h2 className='text-[4rem] font-light mr-4 text-[#2962ff]'>{totalStations}</h2>
-                    <RiGasStationFill size={48} />
+                <div className='w-full flex flex-col items-center justify-center'>
+                    <div className='w-3/4 h-[auto] flex justify-center items-center bg-gray-100 rounded-md p-2 mb-4'>
+                    <ul className='w-1/2 flex flex-col items-center justify-center'>
+                        <li className='text-[xl] font-light text-[#2962ff]'>Total</li>
+                        <li className='text-[2.2rem] text-[#2962ff]'>{totalStations}</li>
+                    </ul>
+                    <ul className='w-1/2 flex flex-col items-center justify-center'>
+                        <li className='text-[xl] font-light text-teal-500'>AFR</li>
+                        <li className='text-[2.2rem] text-teal-500'>{totalAfrStations}</li>
+                    </ul>
+                    </div>
                 </div>
             </div>
         </div>
